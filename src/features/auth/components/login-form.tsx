@@ -33,7 +33,7 @@ const loginSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>
 
-export function LoginForm() {
+export function LoginForm() { 
     const router = useRouter()
 
     const form = useForm<LoginFormValues>({
@@ -63,7 +63,7 @@ export function LoginForm() {
 
     return (
         <div className="flex flex-col gap-6">
-            <Card>
+            <Card className="border-0 rounded-none ">
                 <CardHeader className="text-center">
                     <CardTitle>
                         Welcome Back
@@ -83,6 +83,12 @@ export function LoginForm() {
                                         type="button"
                                         disabled={isPending}
                                     >
+                                        <Image 
+                                            src="/logos/github.svg"
+                                            alt="Github"
+                                            width={20}
+                                            height={20}
+                                        />
                                         Continue With Github
                                     </Button>
                                     <Button
@@ -91,6 +97,12 @@ export function LoginForm() {
                                         type="button"
                                         disabled={isPending}
                                     >
+                                        <Image 
+                                            src="/logos/google.svg"
+                                            alt="Google"
+                                            width={20}
+                                            height={20}
+                                        />    
                                         Continue With Google
                                     </Button>
                                 </div>
