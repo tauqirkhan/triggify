@@ -1,10 +1,17 @@
-import { baseProcedure, createTRPCRouter } from '../init';
+import { baseProcedure, createTRPCRouter, protectedProcedure } from '../init';
 import prisma from '@/lib/db';
 
+
+// data access layer
 export const appRouter = createTRPCRouter({
-  getUsers: baseProcedure.query(async () => {
-      const users = await prisma.user.findMany()
-      return users
+  getUsers: protectedProcedure.query(async ({ctx}) => {
+      console.log({userId: ctx.auth.user.id})
+
+      return await prisma.user.findMany({
+        where: {
+          id: ctx.auth.user.id
+        }
+      })
     }),
 });
 // export type definition of API
