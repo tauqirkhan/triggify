@@ -1,28 +1,40 @@
-import prisma from "@/lib/db";
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { inngest } from "./client";
+import { generateText } from "ai";
+import { createOpenAI } from "@ai-sdk/openai"
 
-export const helloWorld = inngest.createFunction(
-  { id: "hello-world" },
-  { event: "test/hello.world" },
+const google = createGoogleGenerativeAI()
+const openai = createOpenAI()
+
+export const execute = inngest.createFunction(
+  { id: "execute-ai" },
+  { event: "execute/ai" },
   async ({ event, step }) => {
+    await step.sleep("pretend", "5s")
 
-    // scrape data
-    await step.sleep("scraping...", "5s");
+    const {steps: geminiSteps} = await step.ai.wrap(
+      "using-gemini-ai",
+      generateText, 
+      {
+        model: google("gemini-2.5-flash"),
+        system: "You are a helpful assistant",
+        prompt: "What is 2 / 10"
+      }
+    )
 
-    // arrange data in order
-    await step.sleep("arranging...", "5s");
-
-    // paginate data
-    await step.sleep("paginating...", "5s");
-
-    await step.run("create worflow", () => {
-        return prisma.workflow.create({
-            data: {
-                name: "workflow-from-inngest"
-            }
-        })
-    })
-
-    return { message: `Hello ${event.data.email}!` };
+    const {steps: openaiSteps} = await step.ai.wrap(
+      "using-apen-ai",
+      generateText, 
+      {
+        model: openai("gpt-4.1-mini"),
+        system: "You are a helpful assistant",
+        prompt: "What is 2 / 10"
+      }
+    )
+    
+    return {
+      openaiSteps,
+      geminiSteps
+    }
   },
 );
